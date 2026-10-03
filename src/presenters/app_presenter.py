@@ -23,14 +23,14 @@ class AppPresenter:
             self._virtual_screen_size,
             self._main_window.screen_size
         )
-        self._colormap = BlueToRed(-15, 15)
+        self._colormap = BlueToRed(-20, 20)
 
-        self._engine.add_physical_object(PointParticle(-2, 1e11))
+        self._engine.external_field = -10j
         self._engine.add_portal(
             P0Portal(
-                ContinuousCurve(lambda t: 1.5 * cp.exp(1j * cp.pi * t)),
-                ContinuousCurve(lambda t: -1.5 * cp.exp(1j * cp.pi * t)),
-                True, 100),
+                ContinuousCurve(lambda t: 1.5 * cp.exp(1j * cp.pi * (t - 0.5)) + 1),
+                ContinuousCurve(lambda t: 1.5 * cp.exp(1j * cp.pi * (t + 0.5)) - 1),
+                False, 500),
         )
 
         start = time.time()

@@ -5,9 +5,10 @@ from .colormap import Colormap
 class BlueToRed(Colormap):
     _ANCHOR_VALUES = cp.linspace(0, 1, 11, dtype=cp.float32)
     _ANCHOR_COLORS = cp.array([
-        (103, 0, 31), (178, 24, 43), (214, 96, 77), (244, 165, 130), (253, 219, 199),
+        (5, 48, 97), (33, 102, 172),(67, 147, 195), (146, 197, 222), (209, 229, 240),
         (247, 247, 247),
-        (209, 229, 240), (146, 197, 222), (67, 147, 195), (33, 102, 172), (5, 48, 97)
+        (253, 219, 199),
+        (244, 165, 130), (214, 96, 77), (178, 24, 43), (103, 0, 31)
     ], dtype=cp.uint8)
 
     def __init__(self, min_value: float, max_value: float):
