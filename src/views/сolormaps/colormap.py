@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import cupy as cp
-import cupy.typing as cpt
 
 
 class Colormap(ABC):
@@ -9,5 +8,5 @@ class Colormap(ABC):
         pass
 
     @abstractmethod
-    def __call__(self, values: cpt.NDArray[cp.float32]) -> cpt.NDArray[cp.uint8]:
+    def __call__(self, values: cp.ndarray) -> cp.ndarray:
         pass

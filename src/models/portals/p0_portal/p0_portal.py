@@ -22,7 +22,7 @@ class P0Portal(Portal):
         self._second_ends = second_vertices[1:]
 
     def complex_potential_coefficients(self, points: cp.ndarray) -> cp.ndarray:
-        complex_potential_coefficients = cp.zeros((points.shape[0], self.number_of_parameters), dtype=cp.complex64)
+        complex_potential_coefficients = cp.zeros((points.size, self.number_of_parameters), dtype=cp.complex64)
         first_complex_potential_coefficients_kernel(
             points[:, cp.newaxis],
             self._first_starts[cp.newaxis, :], self._first_ends[cp.newaxis, :],
@@ -42,7 +42,7 @@ class P0Portal(Portal):
         return complex_potential_coefficients
 
     def field_strength_coefficients(self, points: cp.ndarray) -> cp.ndarray:
-        field_strength_coefficients = cp.zeros((points.shape[0], self.number_of_parameters), dtype=cp.complex64)
+        field_strength_coefficients = cp.zeros((points.size, self.number_of_parameters), dtype=cp.complex64)
         first_field_strength_coefficients_kernel(
             points[:, cp.newaxis],
             self._first_starts[cp.newaxis, :], self._first_ends[cp.newaxis, :],

@@ -18,19 +18,19 @@ class AppPresenter:
         self._virtual_screen_size = INITIAL_VIRTUAL_SCREEN_SIZE
 
         self._heatmap = Heatmap(
-            MagnitudeOfField(self._engine),
+            Potential(self._engine),
             self._virtual_screen_center,
             self._virtual_screen_size,
             self._main_window.screen_size
         )
-        self._colormap = Grey(0, 30)
+        self._colormap = BlueToRed(-15, 15)
 
         self._engine.add_physical_object(PointParticle(-2, 1e11))
         self._engine.add_portal(
             P0Portal(
                 ContinuousCurve(lambda t: 1.5 * cp.exp(1j * cp.pi * t)),
                 ContinuousCurve(lambda t: -1.5 * cp.exp(1j * cp.pi * t)),
-                True, 500),
+                True, 100),
         )
 
         start = time.time()
