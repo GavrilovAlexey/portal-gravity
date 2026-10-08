@@ -26,23 +26,12 @@ class Heatmap:
         xs, ys = cp.meshgrid(x_axis, y_axis, indexing="ij")  # type: ignore
         self._grid = (xs + ys * 1j).ravel()
 
-    @property
-    def virtual_screen_center(self) -> npt.NDArray[np.float64]:
-        return self._virtual_screen_center
+    def update_virtual_screen_center(self, virtual_screen_center: npt.NDArray[np.float64]):
+        self._virtual_screen_center = virtual_screen_center.copy()
+        self._generate_grid()
 
-    @virtual_screen_center.setter
-    def virtual_screen_center(self, value: npt.NDArray[np.float64]):
-        delta_virtual_screen_center = value - self._virtual_screen_center
-        self._virtual_screen_center = value.copy()
-        self._grid += complex(*delta_virtual_screen_center)
-
-    @property
-    def virtual_screen_size(self):
-        return self._virtual_screen_size
-
-    @virtual_screen_size.setter
-    def virtual_screen_size(self, value: npt.NDArray[np.float64]):
-        self._virtual_screen_size = value.copy()
+    def update_virtual_screen_size(self, virtual_screen_size: npt.NDArray[np.float64]):
+        self._virtual_screen_size = virtual_screen_size.copy()
         self._generate_grid()
 
     @property

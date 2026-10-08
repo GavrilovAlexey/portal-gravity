@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 import cupy as cp
 import pygame
-from config import INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE, VELOCITY_OF_CHANGE_VIRTUAL_SCREEN_SIZE, \
+from config import INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE, VELOCITY_OF_RESIZE_VIRTUAL_SCREEN, \
     TOLERANCE
 from src.models import *
 from src.views import *
@@ -24,12 +24,12 @@ class AppPresenter:
         self._delta_time = 0
 
         self._heatmap = Heatmap(
-            Potential(self._engine),
+            MagnitudeOfField(self._engine),
             self._virtual_screen_center,
             self._virtual_screen_size,
             self._main_window.screen_size,
         )
-        self._colormap = BlueToRed(-10, 15)
+        self._colormap = Viridis(0, 20)
 
         self._engine.add_physical_object(PointParticle(-2.5, 1e11))
         self._engine.add_portal(
@@ -56,16 +56,19 @@ class AppPresenter:
 
             print(f"\rFPS = {1 / (time.time() - start_time)}", end='')
 
-    def move_virtual_screen_center(self, relative_mouse_movement: npt.NDArray[np.float64]):
-        self._virtual_screen_center -= relative_mouse_movement * self._virtual_screen_size
-        self._heatmap.virtual_screen_center = self._virtual_screen_center
+    def move_virtual_screen(self, normalised_movement: npt.NDArray[np.float64]):
+        self._virtual_screen_center -= normalised_movement * self._virtual_screen_size
+        self._heatmap.update_virtual_screen_center(self._virtual_screen_center)
 
-    def change_virtual_screen_size(self, direction_of_change_virtual_screen_size: int):
-        virtual_screen_size_scale = 1 - (direction_of_change_virtual_screen_size *
-                                         VELOCITY_OF_CHANGE_VIRTUAL_SCREEN_SIZE * self._delta_time)
-        self._virtual_screen_size *= virtual_screen_size_scale
-        self._virtual_screen_size = np.maximum(self._virtual_screen_size, self._main_window.screen_size * TOLERANCE)
-        self._heatmap.virtual_screen_size = self._virtual_screen_size
+    def resize_virtual_screen(self, scroll_amount: float):
+        scale = VELOCITY_OF_RESIZE_VIRTUAL_SCREEN ** (-scroll_amount)
+        scale = max(scale,
+                    self._main_window.screen_size[0] * TOLERANCE / self._virtual_screen_size[0],
+                    self._main_window.screen_size[1] * TOLERANCE / self._virtual_screen_size[1])
+
+        self._virtual_screen_size *= scale
+        self.move_virtual_screen(self._main_window.normalised_mouse_position * (1 - 1 / scale))
+        self._heatmap.update_virtual_screen_size(self._virtual_screen_size)
 
     def _handle_input(self):
         self._main_window.handle_input(self)

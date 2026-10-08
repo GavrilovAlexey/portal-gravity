@@ -10,6 +10,7 @@ import numpy.typing as npt
 import cupy as cp
 import pygame
 from config import SCREEN_SIZE, IS_FULL_SCREEN, FPS
+from .mouse import Mouse
 from .сolormaps import Colormap
 
 
@@ -24,9 +25,8 @@ class MainWindow:
             self._screen = pygame.display.set_mode(SCREEN_SIZE)
         pygame.display.set_caption("Portal Gravity")
 
+        self._mouse = Mouse(self.screen_size)
         self._clock = pygame.time.Clock()
-
-        self._is_dragging = False
 
     def handle_input(self, app_presenter: "AppPresenter"):
         for event in pygame.event.get():
@@ -35,14 +35,7 @@ class MainWindow:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     app_presenter.quit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                self._is_dragging = True
-            elif event.type == pygame.MOUSEBUTTONUP:
-                self._is_dragging = False
-            elif event.type == pygame.MOUSEMOTION and self._is_dragging:
-                app_presenter.move_virtual_screen_center(event.rel * np.array([1, -1]) / self.screen_size)
-            elif event.type == pygame.MOUSEWHEEL:
-                app_presenter.change_virtual_screen_size(np.sign(event.y))
+            self._mouse.handle_input(app_presenter, event)
 
     def display_heatmap_values(self, values: cp.ndarray, colormap: Colormap):
         colors = colormap(values)
@@ -56,3 +49,7 @@ class MainWindow:
     @property
     def screen_size(self) -> npt.NDArray[np.int32]:
         return np.asarray(self._screen.get_size(), dtype=np.int32)
+
+    @property
+    def normalised_mouse_position(self) -> npt.NDArray[np.float64]:
+        return self._mouse.normalized_position
