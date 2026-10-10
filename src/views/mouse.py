@@ -15,21 +15,21 @@ class Mouse:
 
         self._position = (np.asarray(pygame.mouse.get_pos()) - screen_size / 2).astype(np.int32) * np.array([1, -1])
         self._movement = np.zeros(2, dtype=np.int32)
-        self.is_LBM_pressed = pygame.mouse.get_pressed()[0]
+        self._is_LBM_pressed = pygame.mouse.get_pressed()[0]
 
     def handle_input(self, app_presenter: "AppPresenter", event: pygame.event.Event):
         if event.type in (pygame.WINDOWFOCUSGAINED, pygame.WINDOWENTER):
             self.__init__(self._screen_size)
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            self.is_LBM_pressed = True
+            self._is_LBM_pressed = True
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            self.is_LBM_pressed = False
+            self._is_LBM_pressed = False
         elif event.type == pygame.MOUSEMOTION:
             self.move(np.asarray(event.rel))
-            if self.is_LBM_pressed:
+            if self._is_LBM_pressed:
                 app_presenter.move_virtual_screen(self.normalized_movement)
         elif event.type == pygame.MOUSEWHEEL:
-            app_presenter.resize_virtual_screen(event.y)
+            app_presenter.resize_virtual_screen(event.y, self.normalized_position)
 
     def move(self, movement: npt.NDArray[np.int32]):
         self._movement = movement * np.array([1, -1])

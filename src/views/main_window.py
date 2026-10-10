@@ -49,7 +49,3 @@ class MainWindow:
     @property
     def screen_size(self) -> npt.NDArray[np.int32]:
         return np.asarray(self._screen.get_size(), dtype=np.int32)
-
-    @property
-    def normalised_mouse_position(self) -> npt.NDArray[np.float64]:
-        return self._mouse.normalized_position

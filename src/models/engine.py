@@ -6,6 +6,7 @@ from .portals import Portal
 class Engine:
     def __init__(self):
         self._physical_objects: list[PhysicalObject] = []
+
         self._portals: list[Portal] = []
         self._splitting_indexes = cp.array([0], dtype=cp.int32)
 
@@ -79,6 +80,13 @@ class Engine:
 
     def field_strengths(self, points: cp.ndarray) -> cp.ndarray:
         return self.non_portal_field_strengths(points) + self.portal_field_strengths(points)
+
+    def update(self, number_of_substeps: int, substep_dt: float):
+        for _ in range(number_of_substeps):
+            updated_physical_objects = [physical_object.updated_object(self.field_strengths, substep_dt) for
+                                        physical_object in self._physical_objects]
+            self._physical_objects = updated_physical_objects
+            self.solve()
 
     @property
     def external_field(self) -> cp.complex64:
