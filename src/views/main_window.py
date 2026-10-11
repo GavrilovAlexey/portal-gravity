@@ -1,10 +1,9 @@
-from __future__ import annotations
+import ctypes
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.presenters import AppPresenter
 
-import ctypes
 import numpy as np
 import numpy.typing as npt
 import cupy as cp
@@ -16,6 +15,8 @@ from .сolormaps import Colormap
 
 class MainWindow:
     def __init__(self):
+        self._app_presenter = None
+
         ctypes.windll.shcore.SetProcessDpiAwareness(2)  # noqa
         pygame.init()
 
@@ -25,27 +26,40 @@ class MainWindow:
             self._screen = pygame.display.set_mode(SCREEN_SIZE)
         pygame.display.set_caption("Portal Gravity")
 
-        self._mouse = Mouse(self.screen_size)
+        self._mouse = Mouse()
         self._clock = pygame.time.Clock()
 
-    def handle_input(self, app_presenter: "AppPresenter"):
+        self._colormap = None
+
+    def link_to_app_presenter(self, app_presenter: "AppPresenter"):
+        self._app_presenter = app_presenter
+
+    def handle_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                app_presenter.quit()
+                self._app_presenter.quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    app_presenter.quit()
-            self._mouse.handle_input(app_presenter, event)
+                    self._app_presenter.quit()
+            self._mouse.handle_input(self._app_presenter, event)
 
-    def display_heatmap_values(self, values: cp.ndarray, colormap: Colormap):
-        colors = colormap(values)
-        heatmap = cp.reshape(colors, (*self.screen_size, 3))
+    def display_heatmap_values(self, values: cp.ndarray):
+        colors = self._colormap(values)
+        heatmap = cp.reshape(colors, (*self.hardware_screen_size, 3))
         heatmap = cp.asnumpy(heatmap)
         pygame.surfarray.blit_array(self._screen, heatmap)
 
-    def tick(self) -> float:
-        return self._clock.tick(FPS) / 1000
+    def tick(self):
+        print(f"\rFPS = {1000 / self._clock.tick(FPS)}", end='')
 
     @property
-    def screen_size(self) -> npt.NDArray[np.int32]:
+    def hardware_screen_size(self) -> npt.NDArray[np.int32]:
         return np.asarray(self._screen.get_size(), dtype=np.int32)
+
+    @property
+    def colormap(self) -> Colormap:
+        return self._colormap
+
+    @colormap.setter
+    def colormap(self, value: Colormap):
+        self._colormap = value

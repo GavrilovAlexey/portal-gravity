@@ -1,0 +1,41 @@
+import numpy as np
+import numpy.typing as npt
+from config import VELOCITY_OF_RESIZE_VIRTUAL_SCREEN
+
+
+class VirtualScreen:
+    def __init__(
+            self,
+            virtual_screen_center: npt.NDArray[np.float64],
+            virtual_screen_size: npt.NDArray[np.float64],
+            min_virtual_screen_size: npt.NDArray[np.float64],
+    ):
+        self._virtual_screen_center = virtual_screen_center.copy()
+        self._virtual_screen_size = virtual_screen_size.copy()
+        self._min_virtual_screen_size = min_virtual_screen_size.copy()
+
+    def move_virtual_screen(self, normalised_movement: npt.NDArray[np.float64]):
+        self._virtual_screen_center -= normalised_movement * self._virtual_screen_size
+
+    def resize_virtual_screen(self, scroll_amount: float, normalised_position: npt.NDArray[np.float64]):
+        scale = VELOCITY_OF_RESIZE_VIRTUAL_SCREEN ** (-scroll_amount)
+        scale = max(scale, *(self._min_virtual_screen_size / self._virtual_screen_size))
+
+        self._virtual_screen_size *= scale
+        self.move_virtual_screen(normalised_position * (1 - 1 / scale))
+
+    @property
+    def left(self) -> float:
+        return float((self._virtual_screen_center - self._virtual_screen_size / 2)[0])
+
+    @property
+    def right(self) -> float:
+        return float((self._virtual_screen_center + self._virtual_screen_size / 2)[0])
+
+    @property
+    def bottom(self) -> float:
+        return float((self._virtual_screen_center - self._virtual_screen_size / 2)[1])
+
+    @property
+    def top(self) -> float:
+        return float((self._virtual_screen_center + self._virtual_screen_size / 2)[1])
