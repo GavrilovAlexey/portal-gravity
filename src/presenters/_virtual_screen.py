@@ -14,6 +14,10 @@ class VirtualScreen:
         self._virtual_screen_size = virtual_screen_size.copy()
         self._min_virtual_screen_size = min_virtual_screen_size.copy()
 
+    def to_normalized_coordinate(self, points: npt.NDArray[np.complex64]) -> npt.NDArray[np.float64]:
+        points = np.column_stack((points.real, points.imag))
+        return (points - self._virtual_screen_center) / self._virtual_screen_size
+
     def move_virtual_screen(self, normalised_movement: npt.NDArray[np.float64]):
         self._virtual_screen_center -= normalised_movement * self._virtual_screen_size
 

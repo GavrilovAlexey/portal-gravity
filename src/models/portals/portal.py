@@ -9,6 +9,7 @@ class Portal(ABC):
     def __init__(self, first_curve: Curve, second_curve: Curve, is_inverted: bool, number_of_elements: int):
         self._first_curve = first_curve
         self._second_curve = second_curve
+
         self._is_inverted = cp.bool(is_inverted)
 
         self._number_of_elements = cp.int32(number_of_elements)
@@ -35,6 +36,14 @@ class Portal(ABC):
         first = (self.field_strength_coefficients(first_points) * cp.conj(first_normals)[:, cp.newaxis]).real
         second = (self.field_strength_coefficients(second_points) * cp.conj(second_normals)[:, cp.newaxis]).real
         return first - second
+
+    @property
+    def first_curve(self) -> Curve:
+        return self._first_curve
+
+    @property
+    def second_curve(self) -> Curve:
+        return self._second_curve
 
     @abstractmethod
     def complex_potentials(self, points: cp.ndarray) -> cp.ndarray:

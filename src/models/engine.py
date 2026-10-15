@@ -1,4 +1,5 @@
 import cupy as cp
+from config import INITIAL_SUBSTEPS_PER_FRAME, INITIAL_SUBSTEP_DT
 from .physical_objects import PhysicalObject
 from .portals import Portal
 
@@ -11,6 +12,9 @@ class Engine:
         self._splitting_indexes = cp.array([0], dtype=cp.int32)
 
         self._external_field = cp.complex64(0)
+
+        self._substeps_per_frame = INITIAL_SUBSTEPS_PER_FRAME
+        self._substep_dt = INITIAL_SUBSTEP_DT
 
     def add_physical_object(self, physical_object: PhysicalObject):
         self._physical_objects.append(physical_object)
@@ -81,9 +85,9 @@ class Engine:
     def field_strengths(self, points: cp.ndarray) -> cp.ndarray:
         return self.non_portal_field_strengths(points) + self.portal_field_strengths(points)
 
-    def update(self, number_of_substeps: int, substep_dt: float):
-        for _ in range(number_of_substeps):
-            updated_physical_objects = [physical_object.updated_object(self.field_strengths, substep_dt) for
+    def update(self):
+        for _ in range(self._substeps_per_frame):
+            updated_physical_objects = [physical_object.updated_object(self.field_strengths, self._substep_dt) for
                                         physical_object in self._physical_objects]
             self._physical_objects = updated_physical_objects
             self.solve()
@@ -95,3 +99,7 @@ class Engine:
     @external_field.setter
     def external_field(self, value: complex):
         self._external_field = cp.complex64(value)
+
+    @property
+    def portals(self) -> list[Portal]:
+        return self._portals

@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.presenters import AppPresenter
+    from src.presenters import InputHandler
 
 import numpy as np
 import numpy.typing as npt
@@ -15,7 +15,7 @@ class Mouse:
 
         self._is_LBM_pressed = pygame.mouse.get_pressed()[0]
 
-    def handle_input(self, app_presenter: "AppPresenter", event: pygame.event.Event):
+    def handle_input(self, input_handler: "InputHandler", event: pygame.event.Event):
         if event.type in (pygame.WINDOWFOCUSGAINED, pygame.WINDOWENTER):
             self._find_mouse_position()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -25,9 +25,9 @@ class Mouse:
         elif event.type == pygame.MOUSEMOTION:
             self.move(event.rel)
             if self._is_LBM_pressed:
-                app_presenter.move_virtual_screen(event.rel)
+                input_handler.move_virtual_screen(event.rel)
         elif event.type == pygame.MOUSEWHEEL:
-            app_presenter.resize_virtual_screen(event.y, self.position)
+            input_handler.resize_virtual_screen(event.y, self.position)
 
     def move(self, movement: npt.NDArray[np.int32]):
         self._position += movement
