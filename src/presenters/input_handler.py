@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 import numpy.typing as npt
+from ._heatmap import Heatmap
 
 
 class InputHandler:
@@ -15,7 +16,6 @@ class InputHandler:
         self.main_window = app_presenter.main_window
 
         self.virtual_screen = app_presenter.virtual_screen
-        self.heatmap = app_presenter.heatmap
 
     def handle_input(self):
         self.main_window.handle_input(self)
@@ -32,3 +32,7 @@ class InputHandler:
 
     def quit(self):
         self.app_presenter.quit()
+
+    @property
+    def heatmap(self) -> Heatmap:
+        return self.app_presenter.heatmap

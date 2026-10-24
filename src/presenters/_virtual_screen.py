@@ -1,17 +1,12 @@
 import numpy as np
 import numpy.typing as npt
-from config import VELOCITY_OF_RESIZE_VIRTUAL_SCREEN
+from config import INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE, VELOCITY_OF_RESIZE_VIRTUAL_SCREEN
 
 
 class VirtualScreen:
-    def __init__(
-            self,
-            virtual_screen_center: npt.NDArray[np.float64],
-            virtual_screen_size: npt.NDArray[np.float64],
-            min_virtual_screen_size: npt.NDArray[np.float64],
-    ):
-        self._virtual_screen_center = virtual_screen_center.copy()
-        self._virtual_screen_size = virtual_screen_size.copy()
+    def __init__(self, min_virtual_screen_size: npt.NDArray[np.float64]):
+        self._virtual_screen_center = INITIAL_VIRTUAL_SCREEN_CENTER.copy()
+        self._virtual_screen_size = INITIAL_VIRTUAL_SCREEN_SIZE.copy()
         self._min_virtual_screen_size = min_virtual_screen_size.copy()
 
     def to_normalized_dimension(self, dimension: float) -> float:

@@ -20,10 +20,10 @@ class PointParticle(PhysicalObject):
 
     def updated_object(self, field_strengths: Callable[[cp.ndarray], cp.ndarray], dt: float) -> Self:
         acceleration = field_strengths(cp.array([self._position]))[0]
-        updated_position = self._position + self._velocity * dt + acceleration * dt ** 2 / 2
+
+        updated_position = self._position + self._velocity * dt
         updated_velocity = self._velocity + acceleration * dt
         return PointParticle(updated_position, updated_velocity, self._mass)
-
 
     @property
     def position(self) -> cp.ndarray:

@@ -1,7 +1,7 @@
 import sys
 import cupy as cp
 import pygame
-from config import TOLERANCE, INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE
+from config import TOLERANCE
 from src.models import *
 from src.views import *
 from .input_handler import InputHandler
@@ -15,10 +15,8 @@ class AppPresenter:
     def __init__(self, engine: Engine, main_window: MainWindow):
         self.engine = engine
         self.main_window = main_window
-        self.main_window.colormap = Viridis(0, 20)
 
-        self.virtual_screen = VirtualScreen(INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE,
-                                            2 * self.main_window.size * TOLERANCE)
+        self.virtual_screen = VirtualScreen(2 * self.main_window.size * TOLERANCE)
 
         self.heatmap = Heatmap(
             MagnitudeOfField(self.engine),

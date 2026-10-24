@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 import pygame
 from src.models import PointParticle
+from ._heatmap import Heatmap
 
 
 class Renderer:
@@ -15,7 +16,6 @@ class Renderer:
         self.main_window = app_presenter.main_window
 
         self.virtual_screen = app_presenter.virtual_screen
-        self.heatmap = app_presenter.heatmap
 
     def render(self):
         self.render_heatmap()
@@ -25,14 +25,14 @@ class Renderer:
         pygame.display.flip()
 
     def render_heatmap(self):
-        self.main_window.display_heatmap_values(self.heatmap.values)
+        self.main_window.displayer.display_heatmap_values(self.heatmap.values)
 
     def render_physical_objects(self):
         for physical_object in self.engine.physical_objects:
             if isinstance(physical_object, PointParticle):
                 point = physical_object.position.get()
                 normalized_point = self.virtual_screen.to_normalized_coordinates(point)[0]
-                self.main_window.display_point(
+                self.main_window.displayer.display_point(
                     normalized_point, self.virtual_screen.to_normalized_dimension(0.05), (128, 128, 128)
                 )
 
@@ -40,12 +40,16 @@ class Renderer:
         for portal in self.engine.portals:
             vertices = portal.first_vertices.get()
             normalized_vertices = self.virtual_screen.to_normalized_coordinates(vertices)
-            self.main_window.display_curve(
+            self.main_window.displayer.display_curve(
                 normalized_vertices, self.virtual_screen.to_normalized_dimension(0.01), (255, 154, 0)
             )
 
             vertices = portal.second_vertices.get()
             normalized_vertices = self.virtual_screen.to_normalized_coordinates(vertices)
-            self.main_window.display_curve(
+            self.main_window.displayer.display_curve(
                 normalized_vertices, self.virtual_screen.to_normalized_dimension(0.01), (0, 101, 255)
             )
+
+    @property
+    def heatmap(self) -> Heatmap:
+        return self.app_presenter.heatmap
