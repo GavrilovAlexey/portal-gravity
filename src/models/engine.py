@@ -101,5 +101,9 @@ class Engine:
         self._external_field = cp.complex64(value)
 
     @property
+    def physical_objects(self) -> list[PhysicalObject]:
+        return self._physical_objects.copy()
+
+    @property
     def portals(self) -> list[Portal]:
-        return self._portals
+        return self._portals.copy()

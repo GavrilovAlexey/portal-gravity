@@ -40,23 +40,51 @@ class MainWindow:
 
     def display_heatmap_values(self, values: cp.ndarray):
         colors = self._colormap(values)
-        heatmap = cp.reshape(colors, (*self.hardware_screen_size, 3))
+        heatmap = cp.reshape(colors, (*self.size, 3))
         heatmap = cp.asnumpy(heatmap)
         pygame.surfarray.blit_array(self._hardware_screen, heatmap)
 
-    def display_curve(self, normalized_vertices: npt.NDArray[np.float64], color: tuple[int, int, int]):
-        vertices = self.to_hardware_coordinate(normalized_vertices)
-        pygame.draw.lines(self._hardware_screen, color, False, vertices, 5)
+    def display_point(
+            self,
+            normalized_point: npt.NDArray[np.float64],
+            normalized_radius: float,
+            color: tuple[int, int, int]
+    ):
+        point = self.to_hardware_coordinates(normalized_point)
+        radius = max(1, self.to_hardware_dimension(normalized_radius))
+        pygame.draw.circle(self._hardware_screen, color, point, radius)
 
-    def to_hardware_coordinate(self, points: npt.NDArray[np.float64]) -> npt.NDArray[np.int32]:
-        return np.round((points * [1, -1] + 0.5) * self.hardware_screen_size).astype(np.int32)
+    def display_curve(
+            self,
+            normalized_vertices: npt.NDArray[np.float64],
+            normalized_width: float,
+            color: tuple[int, int, int]
+    ):
+        vertices = self.to_hardware_coordinates(normalized_vertices)
+        width = max(1, self.to_hardware_dimension(normalized_width))
+        pygame.draw.lines(self._hardware_screen, color, False, vertices, width)
+        pygame.draw.circle(self._hardware_screen, color, vertices[0], width / 2)
+        pygame.draw.circle(self._hardware_screen, color, vertices[-1], width / 2)
+
+    def to_hardware_dimension(self, normalized_dimension: float) -> int:
+        return round(normalized_dimension * self.diagonal_length)
+
+    def to_hardware_dimensions(self, normalized_dimensions: npt.NDArray[np.float64]) -> npt.NDArray[np.int32]:
+        return np.round((normalized_dimensions * self.diagonal_length).astype(np.int32))
+
+    def to_hardware_coordinates(self, points: npt.NDArray[np.float64]) -> npt.NDArray[np.int32]:
+        return np.round((points * [1, -1] + 0.5) * self.size).astype(np.int32)
 
     def tick(self):
         print(f"\rFPS = {1000 / self._clock.tick(FPS)}", end='')
 
     @property
-    def hardware_screen_size(self) -> npt.NDArray[np.int32]:
+    def size(self) -> npt.NDArray[np.int32]:
         return np.asarray(self._hardware_screen.get_size(), dtype=np.int32)
+
+    @property
+    def diagonal_length(self) -> float:
+        return float(np.hypot(self.size[0], self.size[1]))
 
     @property
     def colormap(self) -> Colormap:

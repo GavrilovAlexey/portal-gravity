@@ -17,16 +17,13 @@ class AppPresenter:
         self.main_window = main_window
         self.main_window.colormap = Viridis(0, 20)
 
-        self.input_handler = InputHandler(self)
-        self.displaying_presenter = Renderer(self)
-
         self.virtual_screen = VirtualScreen(INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE,
-                                            2 * self.main_window.hardware_screen_size * TOLERANCE)
+                                            2 * self.main_window.size * TOLERANCE)
 
         self.heatmap = Heatmap(
             MagnitudeOfField(self.engine),
             self.virtual_screen,
-            self.main_window.hardware_screen_size
+            self.main_window.size
         )
 
         self.engine.add_physical_object(PointParticle(0, 0.5 + 0.5j, 5e10))
@@ -37,11 +34,14 @@ class AppPresenter:
         ))
         self.engine.solve()
 
+        self.input_handler = InputHandler(self)
+        self.renderer = Renderer(self)
+
     def mainloop(self):
         while True:
             self.input_handler.handle_input()
             self.engine.update()
-            self.displaying_presenter.render()
+            self.renderer.render()
             self._tick()
 
     def _tick(self):

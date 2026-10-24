@@ -14,7 +14,13 @@ class VirtualScreen:
         self._virtual_screen_size = virtual_screen_size.copy()
         self._min_virtual_screen_size = min_virtual_screen_size.copy()
 
-    def to_normalized_coordinate(self, points: npt.NDArray[np.complex64]) -> npt.NDArray[np.float64]:
+    def to_normalized_dimension(self, dimension: float) -> float:
+        return dimension / self.diagonal_length
+
+    def to_normalized_dimensions(self, dimensions: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        return dimensions / self.diagonal_length
+
+    def to_normalized_coordinates(self, points: npt.NDArray[np.complex64]) -> npt.NDArray[np.float64]:
         points = np.column_stack((points.real, points.imag))
         return (points - self._virtual_screen_center) / self._virtual_screen_size
 
@@ -27,6 +33,14 @@ class VirtualScreen:
 
         self._virtual_screen_size *= scale
         self.move_virtual_screen(normalised_position * (1 - 1 / scale))
+
+    @property
+    def size(self) -> npt.NDArray[np.float64]:
+        return self._virtual_screen_size.copy()
+
+    @property
+    def diagonal_length(self) -> float:
+        return float(np.hypot(self.size[0], self.size[1]))
 
     @property
     def left(self) -> float:

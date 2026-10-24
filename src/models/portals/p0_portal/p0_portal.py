@@ -9,17 +9,17 @@ class P0Portal(Portal):
     NUMBER_OF_PARAMETERS_PER_ELEMENT = 2
 
     def __init__(self, first_curve: Curve, second_curve: Curve, is_inverted: bool, number_of_elements: int):
-        super().__init__(first_curve, second_curve, is_inverted, number_of_elements)
+        super().__init__(is_inverted, number_of_elements)
 
         ts = cp.linspace(0.0, 1.0, self._number_of_elements + 1, dtype=cp.float32)
 
-        first_vertices = self._first_curve.points(ts)
-        self._first_starts = first_vertices[:-1]
-        self._first_ends = first_vertices[1:]
+        self._first_vertices = first_curve.points(ts)
+        self._first_starts = self._first_vertices[:-1]
+        self._first_ends = self._first_vertices[1:]
 
-        second_vertices = self._second_curve.points(ts)
-        self._second_starts = second_vertices[:-1]
-        self._second_ends = second_vertices[1:]
+        self._second_vertices = second_curve.points(ts)
+        self._second_starts = self._second_vertices[:-1]
+        self._second_ends = self._second_vertices[1:]
 
     def complex_potential_coefficients(self, points: cp.ndarray) -> cp.ndarray:
         complex_potential_coefficients = cp.zeros((points.size, self.number_of_parameters), dtype=cp.complex64)
@@ -102,3 +102,11 @@ class P0Portal(Portal):
     @property
     def second_normals(self) -> cp.ndarray:
         return (self._second_ends - self._second_starts) * 1j * (-1 if self._is_inverted else 1)
+
+    @property
+    def first_vertices(self) -> cp.ndarray:
+        return self._first_vertices
+
+    @property
+    def second_vertices(self) -> cp.ndarray:
+        return self._second_vertices

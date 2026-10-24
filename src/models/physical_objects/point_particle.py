@@ -23,3 +23,8 @@ class PointParticle(PhysicalObject):
         updated_position = self._position + self._velocity * dt + acceleration * dt ** 2 / 2
         updated_velocity = self._velocity + acceleration * dt
         return PointParticle(updated_position, updated_velocity, self._mass)
+
+
+    @property
+    def position(self) -> cp.ndarray:
+        return self._position.copy()
