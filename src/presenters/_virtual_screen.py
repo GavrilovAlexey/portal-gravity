@@ -13,7 +13,7 @@ class VirtualScreen:
         return dimension / self.diagonal_length
 
     def to_normalized_dimensions(self, dimensions: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
-        return dimensions / self.diagonal_length
+        return np.asarray(dimensions / self.diagonal_length, dtype=np.float64)
 
     def to_normalized_coordinates(self, points: npt.NDArray[np.complex64]) -> npt.NDArray[np.float64]:
         points = np.column_stack((points.real, points.imag))

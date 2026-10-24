@@ -9,5 +9,5 @@ class HeatmapQuantity(ABC):
         self.engine = engine
 
     @abstractmethod
-    def __call__(self, grid: cpt.NDArray[cp.complex64]) -> cpt.NDArray[cp.float32]:
+    def calculate(self, grid: cpt.NDArray[cp.complex64]) -> cpt.NDArray[cp.float32]:
         pass

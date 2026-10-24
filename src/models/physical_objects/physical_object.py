@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Self
+from typing import Callable
 import cupy as cp
 
 
@@ -13,5 +13,5 @@ class PhysicalObject(ABC):
         pass
 
     @abstractmethod
-    def updated_object(self, field_strengths: Callable[[cp.ndarray], cp.ndarray], dt: float) -> Self:
+    def updated_object(self, field_strengths: Callable[[cp.ndarray], cp.ndarray], dt: float) -> "PhysicalObject":
         pass

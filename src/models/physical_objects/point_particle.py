@@ -1,4 +1,4 @@
-from typing import Callable, Self
+from typing import Callable
 import cupy as cp
 from config import G
 from .physical_object import PhysicalObject
@@ -18,7 +18,7 @@ class PointParticle(PhysicalObject):
         return cp.where(cp.equal(points, self._position), cp.zeros_like(points),
                         G * self._mass / cp.conj(self._position - points))
 
-    def updated_object(self, field_strengths: Callable[[cp.ndarray], cp.ndarray], dt: float) -> Self:
+    def updated_object(self, field_strengths: Callable[[cp.ndarray], cp.ndarray], dt: float) -> "PointParticle":
         acceleration = field_strengths(cp.array([self._position]))[0]
 
         updated_position = self._position + self._velocity * dt

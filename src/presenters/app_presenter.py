@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import cupy as cp
 import pygame
 from config import TOLERANCE
@@ -16,7 +17,7 @@ class AppPresenter:
         self.engine = engine
         self.main_window = main_window
 
-        self.virtual_screen = VirtualScreen(2 * self.main_window.size * TOLERANCE)
+        self.virtual_screen = VirtualScreen(2 * self.main_window.size.astype(np.float64) * TOLERANCE)
 
         self.heatmap = Heatmap(
             MagnitudeOfField(self.engine),

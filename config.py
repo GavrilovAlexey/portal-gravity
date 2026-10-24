@@ -1,5 +1,4 @@
 import numpy as np
-from src.views.сolormaps import Viridis
 
 G = 6.67430e-11
 TOLERANCE = 1e-6
@@ -16,5 +15,3 @@ VELOCITY_OF_RESIZE_VIRTUAL_SCREEN = 1.1
 SCREEN_SIZE = (1600, 900)
 IS_FULL_SCREEN = False
 FPS = 60
-
-INITIAL_COLORMAP = Viridis(0, 20)

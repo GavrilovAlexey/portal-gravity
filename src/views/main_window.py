@@ -10,6 +10,7 @@ import pygame
 from config import SCREEN_SIZE, IS_FULL_SCREEN, FPS
 from .mouse import Mouse
 from .displayer import Displayer
+from .сolormaps import Viridis
 
 
 class MainWindow:
@@ -26,7 +27,7 @@ class MainWindow:
         self.mouse = Mouse()
         self._clock = pygame.time.Clock()
 
-        self.colormap = None
+        self.colormap = Viridis(0, 20)
 
         self.displayer = Displayer(self)
 

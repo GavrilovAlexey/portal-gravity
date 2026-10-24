@@ -32,4 +32,4 @@ class Heatmap:
 
     @property
     def values(self) -> cp.ndarray:
-        return self._displayed_quantity(self._grid)
+        return self._displayed_quantity.calculate(self._grid)
