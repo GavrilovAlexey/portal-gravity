@@ -3,6 +3,8 @@ import cupy as cp
 
 
 class Portal(ABC):
+    __slots__ = ["_is_inverted", "_number_of_elements", "_number_of_parameters", "_parameters"]
+
     NUMBER_OF_PARAMETERS_PER_ELEMENT: int
 
     def __init__(self, is_inverted: bool, number_of_elements: int):

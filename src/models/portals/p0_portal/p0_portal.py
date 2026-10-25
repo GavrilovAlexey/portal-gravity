@@ -6,6 +6,12 @@ from ._p0_kernels import *
 
 
 class P0Portal(Portal):
+    __slots__ = [
+        "_is_inverted", "_number_of_elements", "_number_of_parameters", "_parameters",
+        "_first_vertices", "_first_starts", "_first_ends",
+        "_second_vertices", "_second_starts", "_second_ends"
+    ]
+
     NUMBER_OF_PARAMETERS_PER_ELEMENT = 2
 
     def __init__(self, first_curve: Curve, second_curve: Curve, is_inverted: bool, number_of_elements: int):

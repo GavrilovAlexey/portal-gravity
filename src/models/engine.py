@@ -2,58 +2,31 @@ import cupy as cp
 from config import INITIAL_SUBSTEPS_PER_FRAME, INITIAL_SUBSTEP_DT
 from .physical_objects import PhysicalObject
 from .portals import Portal
+from .solver import Solver
 
 
 class Engine:
-    def __init__(self):
-        self._physical_objects: list[PhysicalObject] = []
+    __slots__ = ["_solver", "_physical_objects", "_portals", "_external_field", "_substeps_per_frame", "_substep_dt"]
 
+    def __init__(self):
+        self._solver = Solver(self)
+
+        self._physical_objects: list[PhysicalObject] = []
         self._portals: list[Portal] = []
-        self._splitting_indexes = cp.array([0], dtype=cp.int32)
 
         self._external_field = cp.complex64(0)
 
         self._substeps_per_frame = INITIAL_SUBSTEPS_PER_FRAME
         self._substep_dt = INITIAL_SUBSTEP_DT
 
+    def __getattr__(self, item):
+        return getattr(self._solver, item)
+
     def add_physical_object(self, physical_object: PhysicalObject):
         self._physical_objects.append(physical_object)
 
     def add_portal(self, portal: Portal):
         self._portals.append(portal)
-        self._splitting_indexes = cp.append(self._splitting_indexes,
-                                            self._splitting_indexes[-1] + portal.number_of_parameters)
-
-    def solve(self):
-        if not self._portals:
-            return
-
-        first_points = cp.concatenate([portal.first_points for portal in self._portals])
-        second_points = cp.concatenate([portal.second_points for portal in self._portals])
-        first_normals = cp.concatenate([portal.first_normals for portal in self._portals])
-        second_normals = cp.concatenate([portal.second_normals for portal in self._portals])
-
-        potential_differences_coefficients = cp.hstack([
-            portal.potential_differences_coefficients(first_points, second_points) for portal in self._portals
-        ])
-        potential_differences = -(self.non_portal_complex_potentials(first_points).real -
-                                  self.non_portal_complex_potentials(second_points).real)
-
-        flux_differences_coefficients = cp.hstack([
-            portal.flux_differences_coefficients(
-                first_points, second_points, first_normals, second_normals) for portal in self._portals
-        ])
-        flux_differences = -((self.non_portal_field_strengths(first_points) * cp.conj(first_normals)).real -
-                             (self.non_portal_field_strengths(second_points) * cp.conj(second_normals)).real)
-
-        coefficient_matrix = cp.vstack((potential_differences_coefficients, flux_differences_coefficients))
-        rhs_vector = cp.hstack((potential_differences, flux_differences))
-        parameters = cp.linalg.solve(coefficient_matrix, rhs_vector)
-
-        parameters = cp.split(parameters, self._splitting_indexes[1:-1].tolist())
-        for portal, portal_parameters in zip(self._portals, parameters):
-            portal.parameters = portal_parameters
-        cp.get_default_memory_pool().free_all_blocks()
 
     def non_portal_complex_potentials(self, points: cp.ndarray) -> cp.ndarray:
         non_portal_complex_potentials = -cp.conj(self._external_field) * points

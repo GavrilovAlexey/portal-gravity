@@ -2,8 +2,10 @@ import cupy as cp
 
 
 class Colormap:
-    _ANCHOR_VALUES: None
-    _ANCHOR_COLORS: None
+    __slots__ = ["_min_value", "_max_value"]
+
+    _ANCHOR_VALUES: cp.ndarray
+    _ANCHOR_COLORS: cp.ndarray
 
     def __init__(self, min_value: float, max_value: float):
         self._min_value = cp.float32(min_value)

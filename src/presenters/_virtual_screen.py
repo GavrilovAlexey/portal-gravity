@@ -4,6 +4,8 @@ from config import INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE, V
 
 
 class VirtualScreen:
+    __slots__ = ["_virtual_screen_center", "_virtual_screen_size", "_min_virtual_screen_size"]
+
     def __init__(self, min_virtual_screen_size: npt.NDArray[np.float64]):
         self._virtual_screen_center = INITIAL_VIRTUAL_SCREEN_CENTER.copy()
         self._virtual_screen_size = INITIAL_VIRTUAL_SCREEN_SIZE.copy()

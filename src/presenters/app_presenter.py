@@ -13,38 +13,40 @@ from ._heatmap import Heatmap
 
 
 class AppPresenter:
+    __slots__ = ["_input_handler", "_renderer", "_engine", "_main_window", "_virtual_screen", "_heatmap"]
+
     def __init__(self, engine: Engine, main_window: MainWindow):
-        self.engine = engine
-        self.main_window = main_window
+        self._input_handler = InputHandler(self)
+        self._renderer = Renderer(self)
 
-        self.virtual_screen = VirtualScreen(2 * self.main_window.size.astype(np.float64) * TOLERANCE)
+        self._engine = engine
+        self._main_window = main_window
 
-        self.heatmap = Heatmap(
-            MagnitudeOfField(self.engine),
-            self.virtual_screen,
-            self.main_window.size
+        self._virtual_screen = VirtualScreen(2 * self._main_window.size.astype(np.float64) * TOLERANCE)
+
+        self._heatmap = Heatmap(
+            MagnitudeOfField(self._engine),
+            self._virtual_screen,
+            self._main_window.size
         )
 
-        self.engine.add_physical_object(PointParticle(0, 0.5 + 0.5j, 5e10))
-        self.engine.add_portal(P0Portal(
+        self._engine.add_physical_object(PointParticle(0, 0.5 + 0.5j, 5e10))
+        self._engine.add_portal(P0Portal(
             DiscreteCurve(cp.array([-2 - 1j, -2 + 1j], dtype=cp.complex64)),
             DiscreteCurve(cp.array([2 - 1j, 2 + 1j], dtype=cp.complex64)),
             False, 100
         ))
-        self.engine.solve()
-
-        self.input_handler = InputHandler(self)
-        self.renderer = Renderer(self)
+        self._engine.solve()
 
     def mainloop(self):
         while True:
-            self.input_handler.handle_input()
-            self.engine.update()
-            self.renderer.render()
+            self._input_handler.handle_input()
+            self._engine.update()
+            self._renderer.render()
             self._tick()
 
     def _tick(self):
-        self.main_window.tick()
+        self._main_window.tick()
 
     @staticmethod
     def quit():

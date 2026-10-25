@@ -5,8 +5,10 @@ from src.models import Engine
 
 
 class HeatmapQuantity(ABC):
+    __slots__ = ["_engine"]
+
     def __init__(self, engine: Engine):
-        self.engine = engine
+        self._engine = engine
 
     @abstractmethod
     def calculate(self, grid: cpt.NDArray[cp.complex64]) -> cpt.NDArray[cp.float32]:

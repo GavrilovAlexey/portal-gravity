@@ -3,6 +3,8 @@ from .curve import Curve
 
 
 class DiscreteCurve(Curve):
+    __slots__ = ["_vertices", "_weights"]
+
     def __init__(self, vertices: cp.ndarray):
         self._vertices = vertices.copy()
 
@@ -13,7 +15,3 @@ class DiscreteCurve(Curve):
 
     def points(self, ts: cp.ndarray) -> cp.ndarray:
         return cp.interp(ts, self._weights, self._vertices).astype(cp.complex64)
-
-    @property
-    def vertices(self) -> cp.ndarray:
-        return self._vertices

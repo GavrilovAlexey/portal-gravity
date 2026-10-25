@@ -6,6 +6,8 @@ from ._heatmap_quantities import HeatmapQuantity
 
 
 class Heatmap:
+    __slots__ = ["_displayed_quantity", "_virtual_screen", "_hardware_screen_size", "_grid"]
+
     def __init__(
             self,
             displayed_quantity: HeatmapQuantity,

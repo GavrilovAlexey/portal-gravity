@@ -5,6 +5,8 @@ from .physical_object import PhysicalObject
 
 
 class PointParticle(PhysicalObject):
+    __slots__ = ["_position", "_velocity", "_mass"]
+
     def __init__(self, position: complex | cp.ndarray, velocity: complex | cp.ndarray, mass: float | cp.ndarray):
         self._position = cp.asarray(position, dtype=cp.complex64)
         self._velocity = cp.asarray(velocity, dtype=cp.complex64)

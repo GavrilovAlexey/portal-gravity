@@ -5,17 +5,16 @@ if TYPE_CHECKING:
 
 import pygame
 from src.models import PointParticle
-from ._heatmap import Heatmap
 
 
 class Renderer:
+    __slots__ = ["_app_presenter"]
+
     def __init__(self, app_presenter: "AppPresenter"):
-        self.app_presenter = app_presenter
+        self._app_presenter = app_presenter
 
-        self.engine = app_presenter.engine
-        self.main_window = app_presenter.main_window
-
-        self.virtual_screen = app_presenter.virtual_screen
+    def __getattr__(self, item):
+        return getattr(self._app_presenter, item)
 
     def render(self):
         self.render_heatmap()
@@ -25,31 +24,27 @@ class Renderer:
         pygame.display.flip()
 
     def render_heatmap(self):
-        self.main_window.displayer.display_heatmap_values(self.heatmap.values)
+        self._main_window.display_heatmap_values(self._heatmap.values)
 
     def render_physical_objects(self):
-        for physical_object in self.engine.physical_objects:
+        for physical_object in self._engine.physical_objects:
             if isinstance(physical_object, PointParticle):
                 point = physical_object.position.get()
-                normalized_point = self.virtual_screen.to_normalized_coordinates(point)[0]
-                self.main_window.displayer.display_point(
-                    normalized_point, self.virtual_screen.to_normalized_dimension(0.05), (128, 128, 128)
+                normalized_point = self._virtual_screen.to_normalized_coordinates(point)[0]
+                self._main_window.display_point(
+                    normalized_point, self._virtual_screen.to_normalized_dimension(0.05), (128, 128, 128)
                 )
 
     def render_portals(self):
-        for portal in self.engine.portals:
+        for portal in self._engine.portals:
             vertices = portal.first_vertices.get()
-            normalized_vertices = self.virtual_screen.to_normalized_coordinates(vertices)
-            self.main_window.displayer.display_curve(
-                normalized_vertices, self.virtual_screen.to_normalized_dimension(0.01), (255, 154, 0)
+            normalized_vertices = self._virtual_screen.to_normalized_coordinates(vertices)
+            self._main_window.display_curve(
+                normalized_vertices, self._virtual_screen.to_normalized_dimension(0.01), (255, 154, 0)
             )
 
             vertices = portal.second_vertices.get()
-            normalized_vertices = self.virtual_screen.to_normalized_coordinates(vertices)
-            self.main_window.displayer.display_curve(
-                normalized_vertices, self.virtual_screen.to_normalized_dimension(0.01), (0, 101, 255)
+            normalized_vertices = self._virtual_screen.to_normalized_coordinates(vertices)
+            self._main_window.display_curve(
+                normalized_vertices, self._virtual_screen.to_normalized_dimension(0.01), (0, 101, 255)
             )
-
-    @property
-    def heatmap(self) -> Heatmap:
-        return self.app_presenter.heatmap

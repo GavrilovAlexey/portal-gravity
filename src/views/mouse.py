@@ -27,14 +27,10 @@ class Mouse:
             if self._is_LBM_pressed:
                 input_handler.move_virtual_screen(event.rel)
         elif event.type == pygame.MOUSEWHEEL:
-            input_handler.resize_virtual_screen(event.y, self.position)
+            input_handler.resize_virtual_screen(event.y, self._position)
 
     def move(self, movement: npt.NDArray[np.int32]):
         self._position += movement
-
-    @property
-    def position(self) -> npt.NDArray[np.int32]:
-        return self._position.copy()
 
     def _find_mouse_position(self):
         self._position = np.asarray(pygame.mouse.get_pos(), dtype=np.int32)
