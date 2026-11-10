@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
+import pygame
+
+from src.models import PointParticle
 
 if TYPE_CHECKING:
     from src.presenters import AppPresenter
-
-import pygame
-from src.models import PointParticle
 
 
 class Renderer:
@@ -13,38 +13,35 @@ class Renderer:
     def __init__(self, app_presenter: "AppPresenter"):
         self._app_presenter = app_presenter
 
-    def __getattr__(self, item):
-        return getattr(self._app_presenter, item)
-
     def render(self):
-        self.render_heatmap()
-        self.render_physical_objects()
-        self.render_portals()
+        self._render_heatmap()
+        self._render_physical_objects()
+        self._render_portals()
 
         pygame.display.flip()
 
-    def render_heatmap(self):
-        self._main_window.display_heatmap_values(self._heatmap.values)
+    def _render_heatmap(self):
+        self._app_presenter.main_window.displayer.display_heatmap_values(self._app_presenter.heatmap.values)
 
-    def render_physical_objects(self):
-        for physical_object in self._engine.physical_objects:
+    def _render_physical_objects(self):
+        for physical_object in self._app_presenter.engine.physical_objects:
             if isinstance(physical_object, PointParticle):
                 point = physical_object.position.get()
-                normalized_point = self._virtual_screen.to_normalized_coordinates(point)[0]
-                self._main_window.display_point(
-                    normalized_point, self._virtual_screen.to_normalized_dimension(0.05), (128, 128, 128)
+                normalized_point = self._app_presenter.virtual_screen.to_normalized_coordinates(point)[0]
+                self._app_presenter.main_window.displayer.display_point(
+                    normalized_point, self._app_presenter.virtual_screen.to_normalized_dimension(0.05), (128, 128, 128)
                 )
 
-    def render_portals(self):
-        for portal in self._engine.portals:
+    def _render_portals(self):
+        for portal in self._app_presenter.engine.portals:
             vertices = portal.first_vertices.get()
-            normalized_vertices = self._virtual_screen.to_normalized_coordinates(vertices)
-            self._main_window.display_curve(
-                normalized_vertices, self._virtual_screen.to_normalized_dimension(0.01), (255, 154, 0)
+            normalized_vertices = self._app_presenter.virtual_screen.to_normalized_coordinates(vertices)
+            self._app_presenter.main_window.displayer.display_curve(
+                normalized_vertices, self._app_presenter.virtual_screen.to_normalized_dimension(0.01), (255, 154, 0)
             )
 
             vertices = portal.second_vertices.get()
-            normalized_vertices = self._virtual_screen.to_normalized_coordinates(vertices)
-            self._main_window.display_curve(
-                normalized_vertices, self._virtual_screen.to_normalized_dimension(0.01), (0, 101, 255)
+            normalized_vertices = self._app_presenter.virtual_screen.to_normalized_coordinates(vertices)
+            self._app_presenter.main_window.displayer.display_curve(
+                normalized_vertices, self._app_presenter.virtual_screen.to_normalized_dimension(0.01), (0, 101, 255)
             )

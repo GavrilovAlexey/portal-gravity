@@ -1,6 +1,8 @@
 from typing import Callable
 import cupy as cp
+
 from config import G
+
 from .physical_object import PhysicalObject
 
 

@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from src.presenters import InputHandler
-
 import numpy as np
 import numpy.typing as npt
 import pygame
+
+if TYPE_CHECKING:
+    from src.presenters import InputHandler
 
 
 class Mouse:

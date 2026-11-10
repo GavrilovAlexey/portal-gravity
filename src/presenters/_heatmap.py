@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 import cupy as cp
+
 from ._virtual_screen import VirtualScreen
 from ._heatmap_quantities import HeatmapQuantity
 

@@ -1,13 +1,29 @@
 from abc import ABC, abstractmethod
 import cupy as cp
 
+from src.models import Curve
+
 
 class Portal(ABC):
-    __slots__ = ["_is_inverted", "_number_of_elements", "_number_of_parameters", "_parameters"]
+    __slots__ = [
+        "_first_vertices", "_first_starts", "_first_ends",
+        "_second_vertices", "_second_starts", "_second_ends",
+        "_is_inverted", "_number_of_elements", "_number_of_parameters", "_parameters"
+    ]
 
     NUMBER_OF_PARAMETERS_PER_ELEMENT: int
 
-    def __init__(self, is_inverted: bool, number_of_elements: int):
+    def __init__(self, first_curve: Curve, second_curve: Curve, is_inverted: bool, number_of_elements: int):
+        ts = cp.linspace(0.0, 1.0, number_of_elements + 1, dtype=cp.float32)
+
+        self._first_vertices = first_curve.points(ts)
+        self._first_starts = self._first_vertices[:-1]
+        self._first_ends = self._first_vertices[1:]
+
+        self._second_vertices = second_curve.points(ts)
+        self._second_starts = self._second_vertices[:-1]
+        self._second_ends = self._second_vertices[1:]
+
         self._is_inverted = cp.bool(is_inverted)
 
         self._number_of_elements = cp.int32(number_of_elements)
@@ -44,6 +60,26 @@ class Portal(ABC):
         pass
 
     @property
+    def first_vertices(self) -> cp.ndarray:
+        return self._first_vertices
+
+    @property
+    def second_vertices(self) -> cp.ndarray:
+        return self._second_vertices
+
+    @property
+    def number_of_parameters(self) -> cp.int32:
+        return self._number_of_parameters
+
+    @property
+    def parameters(self) -> cp.ndarray:
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, value: cp.ndarray):
+        self._parameters = value
+
+    @property
     @abstractmethod
     def first_points(self) -> cp.ndarray:
         pass
@@ -61,26 +97,4 @@ class Portal(ABC):
     @property
     @abstractmethod
     def second_normals(self) -> cp.ndarray:
-        pass
-
-    @property
-    def number_of_parameters(self) -> cp.int32:
-        return self._number_of_parameters
-
-    @property
-    def parameters(self) -> cp.ndarray:
-        return self._parameters
-
-    @parameters.setter
-    def parameters(self, value: cp.ndarray):
-        self._parameters = value
-
-    @property
-    @abstractmethod
-    def first_vertices(self) -> cp.ndarray:
-        pass
-
-    @property
-    @abstractmethod
-    def second_vertices(self) -> cp.ndarray:
         pass

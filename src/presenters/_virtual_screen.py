@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.typing as npt
+
 from config import INITIAL_VIRTUAL_SCREEN_CENTER, INITIAL_VIRTUAL_SCREEN_SIZE, VELOCITY_OF_RESIZE_VIRTUAL_SCREEN
 
 

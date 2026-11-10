@@ -1,15 +1,17 @@
 import cupy as cp
+
 from config import INITIAL_SUBSTEPS_PER_FRAME, INITIAL_SUBSTEP_DT
+
 from .physical_objects import PhysicalObject
 from .portals import Portal
 from .solver import Solver
 
 
 class Engine:
-    __slots__ = ["_solver", "_physical_objects", "_portals", "_external_field", "_substeps_per_frame", "_substep_dt"]
+    __slots__ = ["solver", "_physical_objects", "_portals", "_external_field", "_substeps_per_frame", "_substep_dt"]
 
     def __init__(self):
-        self._solver = Solver(self)
+        self.solver = Solver(self)
 
         self._physical_objects: list[PhysicalObject] = []
         self._portals: list[Portal] = []
@@ -18,9 +20,6 @@ class Engine:
 
         self._substeps_per_frame = INITIAL_SUBSTEPS_PER_FRAME
         self._substep_dt = INITIAL_SUBSTEP_DT
-
-    def __getattr__(self, item):
-        return getattr(self._solver, item)
 
     def add_physical_object(self, physical_object: PhysicalObject):
         self._physical_objects.append(physical_object)
@@ -63,7 +62,7 @@ class Engine:
             updated_physical_objects = [physical_object.updated_object(self.field_strengths, self._substep_dt) for
                                         physical_object in self._physical_objects]
             self._physical_objects = updated_physical_objects
-            self.solve()
+            self.solver.solve()
 
     @property
     def external_field(self) -> cp.complex64:

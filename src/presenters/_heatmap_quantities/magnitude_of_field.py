@@ -1,5 +1,6 @@
 import cupy as cp
 import cupy.typing as cpt
+
 from .heatmap_quantity import HeatmapQuantity
 
 

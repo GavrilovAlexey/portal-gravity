@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import cupy as cp
 import cupy.typing as cpt
+
 from src.models import Engine
 
 

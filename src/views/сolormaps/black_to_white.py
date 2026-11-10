@@ -1,4 +1,5 @@
 import cupy as cp
+
 from .colormap import Colormap
 
 

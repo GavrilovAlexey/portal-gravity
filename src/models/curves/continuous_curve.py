@@ -1,5 +1,6 @@
 from collections.abc import Callable
 import cupy as cp
+
 from .curve import Curve
 
 
